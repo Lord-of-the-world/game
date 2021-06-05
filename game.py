@@ -168,8 +168,10 @@ class Visuals_Gameplay:
         
         self.money_v = tk.Label(text='деньги: 500')
         self.bomb_v = tk.Label(text='бомбы: 0')
+        self.income_v = tk.Label(text='доход: 6')
         self.money_v.grid(row=0, column=1)
         self.bomb_v.grid(row=1, column=1)
+        self.income_v.grid(row=0, column=2)
         self.countries_f = tk.Frame(bg= '#fff86e')
         self.countries = tk.Label(master= self.countries_f, text = 'Страны', bg= '#fff86e')
         self.russia = tk.Label(master= self.countries_f, text = 'Россия', bg= '#fff86e')
@@ -205,17 +207,17 @@ class Visuals_Gameplay:
 
         self.up = tk.Label(text= 'Улучшения')
         if self.team == 'ru':
-            self.up_1 = tk.Button(text= 'Москва') 
-            self.up_2 = tk.Button(text= 'Санкт-Петербург')
-            self.up_3 = tk.Button(text= 'Новосибирск')
+            self.up_1 = tk.Button(text= 'Москва (цена:100, уровент:1, доход:2)') 
+            self.up_2 = tk.Button(text= 'Санкт-Петербург (цена:100, уровент:1, доход:2)')
+            self.up_3 = tk.Button(text= 'Новосибирск (цена:100, уровент:1, доход:2)')
         elif self.team == 'usa':
-            self.up_1 = tk.Button(text= 'Вашингтон') 
-            self.up_2 = tk.Button(text= 'Нью-Йорк')
-            self.up_3 = tk.Button(text= 'Лос-Анджелис')       
+            self.up_1 = tk.Button(text= 'Вашингтон (цена:100, уровент:1, доход:2)') 
+            self.up_2 = tk.Button(text= 'Нью-Йорк (цена:100, уровент:1, доход:2)')
+            self.up_3 = tk.Button(text= 'Лос-Анджелис (цена:100, уровент:1, доход:2)')       
         else:
-            self.up_1 = tk.Button(text= 'Берлин')
-            self.up_2 = tk.Button(text= 'Гамбург')
-            self.up_3 = tk.Button(text= 'Мюнхен')
+            self.up_1 = tk.Button(text= 'Берлин (цена:100, уровент:1, доход:2)')
+            self.up_2 = tk.Button(text= 'Гамбург (цена:100, уровент:1, доход:2)')
+            self.up_3 = tk.Button(text= 'Мюнхен (цена:100, уровент:1, доход:2)')
 
         self.up_1.bind('<Button-1>', lambda event, text=1: gameplay.upgrade(event, text))
         self.up_2.bind('<Button-1>', lambda event, text=2: gameplay.upgrade(event, text))
@@ -322,6 +324,30 @@ class Visuals_Gameplay:
             else:
                 self.shield_3['text'] = 'Мюнхен(щит)'
 
+    def upgrade_v(self, lvl, text):
+        if self.team == 'ru':
+            if text == 1:
+                self.up_1['text'] = f'Москва(цена:{lvl * 100}, уровень:{lvl}, доход:{lvl * 2})'
+            elif text == 2:
+                self.up_2['text'] = f'Санкт-Петербург(цена:{lvl * 100}, уровень:{lvl}, доход:{lvl * 2})'
+            else:
+                self.up_3['text'] = f'Новосибирск(цена:{lvl * 100}, уровень:{lvl}, доход:{lvl * 2})'
+        elif self.team == 'usa':
+            if text == 1:
+                self.up_1['text'] = f'Вашингтон(цена:{lvl * 100}, уровень:{lvl}, доход:{lvl * 2})'
+            elif text == 2:
+                self.up_2['text'] = f'Нью-Йорк(цена:{lvl * 100}, уровень:{lvl}, доход:{lvl * 2})'
+            else:    
+                self.up_3['text'] = f'Лос-Анджелис(цена:{lvl * 100}, уровень:{lvl}, доход:{lvl * 2})'
+        else:
+            if text == 1:
+                self.up_1['text'] = f'Берлин(цена:{lvl * 100}, уровень:{lvl}, доход:{lvl * 2})'
+            elif text ==2:
+                self.up_2['text'] = f'Гамбург(цена:{lvl * 100}, уровень:{lvl}, доход:{lvl * 2})'
+            else:
+                self.up_3['text'] = f'Мюнхен(цена:{lvl * 100}, уровень:{lvl}, доход:{lvl * 2})'
+            
+
     def bombs_hide(self):
         self.choise.grid_forget()
         self.attack_1.grid_forget()        
@@ -336,6 +362,8 @@ class Visuals_Gameplay:
         self.money_v['text'] = f'деньги: {money}'
     def bombs_change(self, bombs):
         self.bomb_v['text'] = f'бомбы: {bombs}'
+    def income_change(self, income):
+        self.income_v['text'] = f'доход: {income}'
 
     def convert(self, seconds):
         min, sec = divmod(seconds, 60)
@@ -352,7 +380,7 @@ class Visuals_Gameplay:
                 self.time_label['text'] = str(self.convert(timer_now))
                 current_time = now
                 timer_now -= 1
-                gameplay.money += 10
+                gameplay.money += (gameplay.city1['lvl'] * 2 + gameplay.city2['lvl'] * 2 + gameplay.city3['lvl'] * 2)
                 money = gameplay.money
                 self.money_change(money)
         else:
@@ -375,6 +403,7 @@ class Gameplay:
         self.city1 = {'be': '1', 'lvl': 1, 'shield': '0'}
         self.city2 = {'be': '1', 'lvl': 1, 'shield': '0'}
         self.city3 = {'be': '1', 'lvl': 1, 'shield': '0'}
+        self.income = (self.city1['lvl'] * 2 + self.city2['lvl'] * 2 + self.city3['lvl'] * 2)
 
     def upgrade(self, event, text):
         if text == 1:
@@ -383,6 +412,11 @@ class Gameplay:
             else:
                 self.money -= self.city1['lvl'] * 100
                 self.city1['lvl'] += 1 
+                lvl = self.city1['lvl']
+                visual_gameplay.upgrade_v(lvl, text)
+                self.income = (self.city1['lvl'] * 2 + self.city2['lvl'] * 2 + self.city3['lvl'] * 2)
+                income = self.income
+                visual_gameplay.income_change(income)
                 rq.get(f"http://sham13namo.pythonanywhere.com/sdt_in?level={self.city1['lvl']}&shield={self.city1['shield']}")
         elif text == 2:
             if self.money < self.city2['lvl'] * 100:
@@ -390,6 +424,11 @@ class Gameplay:
             else:
                 self.money -= self.city2['lvl'] * 100
                 self.city2['lvl'] += 1
+                lvl = self.city2['lvl']
+                visual_gameplay.upgrade_v(lvl, text)
+                self.income = (self.city1['lvl'] * 2 + self.city2['lvl'] * 2 + self.city3['lvl'] * 2)
+                income = self.income
+                visual_gameplay.income_change(income)
                 rq.get(f"http://sham13namo.pythonanywhere.com/sdt_in?level={self.city2['lvl']}&shield={self.city2['shield']}")
         else:
             if self.money < self.city3['lvl'] * 100:
@@ -397,8 +436,13 @@ class Gameplay:
             else:
                 self.money -= self.city3['lvl'] * 100
                 self.city3['lvl'] += 1
+                lvl = self.city3['lvl']
+                visual_gameplay.upgrade_v(lvl, text)
+                self.income = (self.city1['lvl'] * 2 + self.city2['lvl'] * 2 + self.city3['lvl'] * 2)
+                income = self.income
+                visual_gameplay.income_change(income)
                 rq.get(f"http://sham13namo.pythonanywhere.com/sdt_in?level={self.city3['lvl']}&shield={self.city3['shield']}")
-        money = self.mone     
+        money = self.money
 
     def bomb_open(self, event):
         if self.money < 300:
@@ -417,8 +461,6 @@ class Gameplay:
         else:
             self.money -= 200
             self.bombs += 1
-            
-            
             bombs = self.bombs
             visual_gameplay.bombs_change(bombs)
             rq.get(f"http://sham13namo.pythonanywhere.com/sd_in?money={self.money}&bombs={self.bombs}&city={'0'}&country={self.team}&isopen={self.technology}")
@@ -439,7 +481,6 @@ class Gameplay:
             print('Done')  
     
     def shield_create(self, event, text):
-        print(text)
         if self.money < 150:
             print("Don't enough money")
         else:
